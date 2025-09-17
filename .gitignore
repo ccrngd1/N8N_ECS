@@ -1,0 +1,26 @@
+# CDK
+*.js
+*.js.map
+*.d.ts
+node_modules
+cdk.out
+cdk.context.json
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
