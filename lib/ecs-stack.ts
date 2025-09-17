@@ -69,7 +69,7 @@ export class EcsStack extends cdk.Stack {
         N8N_PORT: '5678',
         N8N_SECURE_COOKIE: 'false',
         DB_TYPE: 'sqlite',
-        DB_SQLITE_PATH: '/home/node/.n8n/database.sqlite',        
+        DB_SQLITE_PATH: '/home/node/.n8n/database.sqlite',
       },
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'n8n' }),
     });
@@ -98,7 +98,7 @@ export class EcsStack extends cdk.Stack {
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(80),
       'Allow HTTP traffic'
-    ); 
+    );
     albSg.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(5678),
@@ -119,25 +119,18 @@ export class EcsStack extends cdk.Stack {
       port: 5678,
       targetType: elbv2.TargetType.IP,
       healthCheck: {
-        path: '/healthz',
+        path: '/',
         interval: cdk.Duration.seconds(30),
+        healthyHttpCodes: '200',
       },
-    });  
-
-    // Add listener
-    const listener = alb.addListener('HttpListener80', {
-      port: 80,
-      protocol: elbv2.ApplicationProtocol.HTTP, 
-      defaultAction: elbv2.ListenerAction.fixedResponse(403, {  // Set default action here
-        contentType: 'text/plain',
-        messageBody: 'Access denied',
-      }),
     });
-    
-    listener.addAction('restricted', {
-      priority: 1,
-      action: elbv2.ListenerAction.forward([targetGroup]),
-    });   
+
+    // Add listener - allows public access
+    alb.addListener('HttpListener', {
+      port: 80,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      defaultTargetGroups: [targetGroup],
+    });
 
     // Create Fargate Service
     const service = new ecs.FargateService(this, 'N8nService', {
