@@ -122,14 +122,7 @@ export class EcsStack extends cdk.Stack {
         path: '/healthz',
         interval: cdk.Duration.seconds(30),
       },
-    }); 
-
-    // First, get the IP from environment variable
-    const allowedIp = process.env.ALLOWED_IP_ADDRESS;
-
-    if (!allowedIp) {
-      throw new Error('ALLOWED_IP_ADDRESS environment variable must be set');
-    }
+    });  
 
     // Add listener
     const listener = alb.addListener('HttpListener80', {
@@ -143,9 +136,6 @@ export class EcsStack extends cdk.Stack {
     
     listener.addAction('restricted', {
       priority: 1,
-      conditions: [
-        elbv2.ListenerCondition.sourceIps([`${allowedIp}/32`]),
-      ],
       action: elbv2.ListenerAction.forward([targetGroup]),
     });   
 
