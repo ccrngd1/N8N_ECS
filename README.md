@@ -51,6 +51,7 @@ n8n-ecs/
 
 3. Build the project:
    ```bash
+   cdk bootstrap
    npm run build
    ```
 
